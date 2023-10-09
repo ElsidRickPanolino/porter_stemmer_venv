@@ -116,7 +116,7 @@ if __name__ == "__main__":
             print("Number of Valid Similarities:", num_valid_similarities)
 
             # Calculate the average similarity
-            average_similarity = total_similarity / num_valid_similarities if num_valid_similarities > 0 else 0.0
+            average_similarity = (total_similarity / num_valid_similarities) if num_valid_similarities > 0 else 0.0
 
             # Format the average similarity as a float with two decimal places
             formatted_average_similarity = f"{average_similarity:.2f}"

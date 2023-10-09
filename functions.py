@@ -1,6 +1,9 @@
 import re
 import string
 
+# for testing
+import random
+
 # converts word to cv pattern
 def wordTocv(word):
     cons = "bcdfghjklmnpqrstvwxz"
@@ -50,8 +53,8 @@ def cvToCV(cv):
         
 # count the number of CV
 def countM(CV):
-    while CV !="" and CV[-1]=='C':
-        CV = CV[:-1]
+    # while CV !="" and CV[-1]=='C':
+    #     CV = CV[:-1]
     m = CV.count('VC')
     return m
 
@@ -208,10 +211,11 @@ def step4(word):
     if wordToM(word)>1:
         for i in suffix_list:
             if i == "ion":
-                if word[-1] == "s":
-                    word = replace_end(word, i, "s")
-                if word[-1] == "t":
-                    word = replace_end(word, i, "t")
+                if endsWith(word, "sion"):
+                    word = replace_end(word, i, "")
+
+                if endsWith(word, "tion"):
+                    word = replace_end(word, i, "")
                 
             if endsWith(word, i):
                 word = replace_end(word, i, "")
@@ -231,12 +235,16 @@ def step5a(word):
 
 def step5b(word):
     if wordToM(word)>1 and doubleConsonant(word) and endsWith(word,"l"):
-        changeWord(word, "ll", "l")
+        word = changeWord(word, "ll", "l")
         
     return word
         
 def stem(word):
     word = word.lower()
+    
+    rnd = random.randint(0,10)
+    if(rnd == 5):
+        print(word, " - ", end="")
     
     punctuation_chars = set(string.punctuation)
     
@@ -258,6 +266,10 @@ def stem(word):
     # print(word, "5a")
     word = step5b(word)
     # print(word, "5b")
+    
+    if(rnd == 5):
+        print(word)
+
     return word
 
 
@@ -283,6 +295,3 @@ def stemPhrase(phrase):
     return stemmed_phrase
 
 
-
-
-print(stem(""))
