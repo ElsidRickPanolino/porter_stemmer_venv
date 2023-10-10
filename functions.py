@@ -104,12 +104,14 @@ def iscvc(word):
     else:
         return False
 
+# Replace the end of the word from old values to new
 def replace_end(word, old, new):
     trim_size = len(old)*-1
     word = word [:trim_size]
     word += new
     return word
 
+#  Check if the word ends with specific string and place it if it does
 def changeWord(word, old, new):
         if endsWith(word, old):
             word = replace_end(word, old, new)
@@ -117,6 +119,7 @@ def changeWord(word, old, new):
 
     
 # to get the base word from the plural form
+# example: cats -> cat
 def step1a(word):
     suffix_list = [["sses", "ss"], ["ies", "i"], ["ss", "ss"], ["s", ""]]
     for i in suffix_list:
@@ -125,7 +128,8 @@ def step1a(word):
             break
     return word
 
-
+# to remove eed, ed and ing
+# example: agreed -> agree
 def step1b(word):
     sec_and_third = False
     if wordToM(word) > 0:
@@ -153,7 +157,9 @@ def step1b(word):
                     
                     
     return word
-      
+
+# Replace long words end with y to i
+# example: happy -> happi ; sky -> sky
 def step1c(word):
     
     if endsWith(word, "y"):
@@ -161,9 +167,14 @@ def step1c(word):
             word = replace_end(word, "y","i")
     return word
 
+# to stem long words, replace suffix with respective values
+# example: relational -> relate
 def step2(word):
+    # list of suffixes and its replacement
     suffix_list = [["ational", "ate"], 
-                   ["tional", "tion"], 
+                   ["tional", "tion"],
+                   
+        # comment to reduce the similarity   
                    ["enci", "ence"], 
                    ["anci", "ance"], 
                    ["izer", "ize"], 
@@ -189,10 +200,13 @@ def step2(word):
                 word = replace_end(word, i[0], i[1])
                 break
     return word
-    
+
+#  for longer words and longer suffixes
+# example: electrical -> electric
 def step3(word):
     suffix_list = [["icate", "ic"], 
-                   ["ative", ""], 
+                   ["ative", ""],
+        # comment to reduce the similarity   
                    ["alize", "al"], 
                    ["iciti", "ic"], 
                    ["ical", "ic"], 
@@ -204,9 +218,15 @@ def step3(word):
                 word = replace_end(word, i[0], i[1])
                 break
     return word
-    
+
+# for stems with mvalues greater than 1
+# example: allowance -> allow
 def step4(word):
-    suffix_list = ["al", "ance", "ence", "er", "ic", "able", "ible", "ant", "ement", "ment", "ent", "ion", "ou", "ism", "ate", "iti", "ous", "ive", "ize"]
+    suffix_list = ["al", "ance", "ence",
+                   
+        # comment to reduce the similarity
+                   "er", "ic", "able", "ible", "ant", "ement", "ment", "ent", "ion", "ou", "ism",
+                   "ate", "iti", "ous", "ive", "ize"]
 
     if wordToM(word)>1:
         for i in suffix_list:
@@ -223,7 +243,8 @@ def step4(word):
     return word
 
 
-
+# removes e from the words with m greater than 1 and does not end with o
+# example: probate -> probat; rate -> rate
 def step5a(word):
     if wordToM(word) > 1:
         word = changeWord(word, "e", "")
@@ -232,19 +253,33 @@ def step5a(word):
         
     return word
 
-
+# removes double consonant l and d for m > 1
+# example: controll -> control ; roll -> roll
 def step5b(word):
     if wordToM(word)>1 and doubleConsonant(word) and endsWith(word,"l"):
         word = changeWord(word, "ll", "l")
         
     return word
-        
+
+# reduce the accuraccy by removing the characters from the string
+def reduceAccuracy(word):
+    reduce_level =1
+    if len(word) > 3:
+        word = word[:-reduce_level]
+    return word
+
+# following the steps apply the stem() function to a word
+# the word is preprocessed by lowering the case and removing punctuations
 def stem(word):
     word = word.lower()
     
-    rnd = random.randint(0,10)
-    if(rnd == 5):
-        print(word, " - ", end="")
+    # monitor the progress
+    # since there large number of words
+    # there is a 1/1000 probability that the word and its stemmed value is printed in the console 
+    rnd = random.randint(1,1000)
+    if rnd == 500:
+        print(word, " -> ", end="")
+    
     
     punctuation_chars = set(string.punctuation)
     
@@ -267,31 +302,30 @@ def stem(word):
     word = step5b(word)
     # print(word, "5b")
     
-    if(rnd == 5):
+    word = reduceAccuracy(word)
+    
+    if rnd == 500:
         print(word)
 
     return word
 
-
+# iterate to a phrase stem each word and bypass punctuation
 def stemPhrase(phrase):
     
+    # if the value is not string convert it into string
     if not isinstance(phrase, str):
         phrase = str(phrase)
 
+    
     words = phrase.split()
-
     stemmed_tokens = []
-
     for word in words:
-
         word_without_punctuation = ''.join([char for char in word if char not in string.punctuation])
-
         stemmed_word = stem(word_without_punctuation)
         stemmed_word_with_punctuation = ''.join([char if char in string.punctuation else '' for char in word]) + stemmed_word
-
         stemmed_tokens.append(stemmed_word_with_punctuation)
+        
     stemmed_phrase = ' '.join(stemmed_tokens)
 
     return stemmed_phrase
-
 
